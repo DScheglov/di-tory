@@ -21,3 +21,11 @@ export const run = <T>(fn: () => T) => asyncScopeApi.run(fn);
 export const getStore = () => asyncScopeApi.getStore();
 
 export const exit = () => asyncScopeApi.exit();
+
+export default {
+  init,
+  enter,
+  run,
+  getStore,
+  exit,
+};

@@ -1,5 +1,5 @@
 import { Module, Scope } from 'di-tory';
-import * as AsyncDiScope from 'di-tory/async-scope';
+import AsyncDiScope from 'di-tory/async-scope';
 import asyncScopeNodeApi from 'di-tory/async-scope/node';
 import RequestId from './request-id';
 import Logger from './logger';
