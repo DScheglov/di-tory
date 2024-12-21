@@ -7,6 +7,7 @@ import {
 } from './DependencyResolutionError';
 import { run, init } from './async-scope';
 import asyncScopeApi from './async-scope.node';
+import { after } from 'node:test';
 
 init(asyncScopeApi);
 
@@ -443,7 +444,51 @@ describe('Module', () => {
     });
   });
 
-  describe('Memoization', () => {
+  describe('Misc', () => {
+    it('throws in attempt to extend module after initialization on publicImpl', () => {
+      const main = Module()
+        .publicImpl({
+          a: () => 1,
+        })
+        .init({
+          a() {},
+        });
+
+      expect(() =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (main as any).publicImpl({
+          b: () => 2,
+        }),
+      ).toThrowError('Cannot extend initialized module');
+    });
+
+    it('throws in attempt to extend module after initialization on privateImpl', () => {
+      const main = Module()
+        .privateImpl({
+          a: () => 1,
+        })
+        .init({
+          a() {},
+        });
+
+      expect(() =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (main as any).privateImpl({
+          b: () => 2,
+        }),
+      ).toThrowError('Cannot extend initialized module');
+    });
+
+    it('throws in attempt to provide implementation with not a function', () => {
+      expect(() =>
+        Module()
+          .publicImpl({
+            a: 1 as any,
+          })
+          .create(),
+      ).toThrowError('Expected a to be a function, but got number');
+    });
+
     it("doesn't memoize on the resolver level", () => {
       const factory = ({ x }: { x: number }) => ({ x: x + 1 });
       const main = Module()
