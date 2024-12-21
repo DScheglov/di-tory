@@ -9,7 +9,7 @@ import createExpressApp from './app.express';
 
 AsyncDiScope.init(asyncScopeNodeApi);
 
-const main = Module()
+const App = Module()
   .private(
     {
       ctx: () => new RequestId(),
@@ -20,13 +20,13 @@ const main = Module()
     setRequestId({ ctx }, requestId?: string) {
       ctx.requestId = requestId;
     },
-    gerRequestId({ ctx }) {
+    getRequestId({ ctx }) {
       return ctx.requestId;
     },
   })
   .private({
-    logger: ({ gerRequestId }, { level }: { level: string }) =>
-      new Logger(level, gerRequestId),
+    logger: ({ getRequestId }, { level }: { level: string }) =>
+      new Logger(level, getRequestId),
   })
   .private({
     userRepo: ({ logger }) => new UserRepository(logger),
@@ -34,8 +34,12 @@ const main = Module()
   .private({
     auth: ({ userRepo, logger }) => new AuthService(userRepo, logger),
   })
-  .public({
+  .private({
     app: (self, { port }: { port: number }) => createExpressApp(self, { port }),
+  })
+  .public({
+    run: ({ app }) => app.run,
   });
 
-main.create({ port: 3000, level: 'debug' }).app.run();
+const app = App.create({ port: 3000, level: 'debug' });
+app.run();

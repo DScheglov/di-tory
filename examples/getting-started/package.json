@@ -1,5 +1,8 @@
 {
   "type":"module",
+  "scripts": {
+    "start": "npx src/index.js --watch --watch-path=src"
+  },
   "dependencies": {
     "di-tory": "../../"
   }

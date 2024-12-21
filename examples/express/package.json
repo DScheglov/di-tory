@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts --watch --watch-path=./src"
+  },
   "dependencies": {
     "di-tory": "../../",
     "express": "^4.21.2"
