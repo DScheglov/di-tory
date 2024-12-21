@@ -110,8 +110,7 @@ export type ModuleBuilder<
   Params extends object,
 > = IExtendable<Pr, Pb, Params> & ICreatable<Pb, Params>;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type FactoryInstanceMap = WeakMap<Function, unknown>;
+export type FactoryInstanceMap = Map<PropertyKey, unknown>;
 export type AsyncStorage = WeakMap<object, FactoryInstanceMap>;
 export interface AsyncScopeApi {
   enter(): void;

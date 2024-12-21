@@ -442,4 +442,21 @@ describe('Module', () => {
       expect(idGenerator).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('Memoization', () => {
+    it("doesn't memoize on the resolver level", () => {
+      const factory = ({ x }: { x: number }) => ({ x: x + 1 });
+      const main = Module()
+        .private({
+          x: () => 1,
+        })
+        .public({
+          y: factory,
+          z: factory,
+        })
+        .create();
+
+      expect(main.y).not.toBe(main.z);
+    });
+  });
 });

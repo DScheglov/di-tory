@@ -15,7 +15,7 @@ import { getStore } from './async-scope.js';
 import { propertyKeys } from './objects.js';
 import { normalizeScope, overrideScope } from './scope.js';
 
-const singletonInstances: FactoryInstanceMap = new WeakMap();
+const singletonInstances: FactoryInstanceMap = new Map();
 
 export const createModule = <
   Pr extends object,
@@ -37,7 +37,6 @@ export const createModule = <
   >;
 
   const resolutionStack = new Stack<keyof M>();
-  const dependents = new Map<keyof M, Set<keyof M>>();
   const moduleInstances: FactoryInstanceMap = new Map();
   const publicNames: Set<PropertyKey> = new Set(propertyKeys(publicResolvers));
 
@@ -71,16 +70,6 @@ export const createModule = <
     );
   };
 
-  const registerDependents = (item: keyof M) => {
-    const currentDependents = dependents.get(item) ?? new Set();
-
-    dependents.set(item, currentDependents);
-
-    resolutionStack.items.forEach((dependent) =>
-      currentDependents.add(dependent),
-    );
-  };
-
   const updateParentScope = (scope?: ScopeType) => {
     const parentItem = resolutionStack.peek();
     if (parentItem == null) return;
@@ -94,7 +83,6 @@ export const createModule = <
       transientInstances = new Map();
     }
 
-    registerDependents(item);
     const resolver = resolvers[item];
 
     if (resolver == null)
@@ -106,7 +94,7 @@ export const createModule = <
 
     const instances = getInstances(resolver);
 
-    if (instances.has(resolver)) return instances.get(resolver);
+    if (instances.has(item)) return instances.get(item);
     const currentStack = resolutionStack.toStringArray();
     try {
       resolutionStack.push(item);
@@ -136,7 +124,7 @@ export const createModule = <
 
     updateParentScope(resolver.scope);
 
-    getInstances(resolver).set(resolver, instance);
+    getInstances(resolver).set(item, instance);
 
     if (resolutionStack.length === 0) {
       initializers?.[item]?.call(instance, self, params);
