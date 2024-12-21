@@ -1,4 +1,4 @@
-# DI-TORY
+# di-tory [![Coverage Status](https://coveralls.io/repos/github/DScheglov/di-tory/badge.svg?branch=main)](https://coveralls.io/github/DScheglov/di-tory?branch=main) [![npm version](https://img.shields.io/npm/v/di-tory.svg?style=flat-square)](https://www.npmjs.com/package/di-tory) [![npm downloads](https://img.shields.io/npm/dm/di-tory.svg?style=flat-square)](https://www.npmjs.com/package/di-tory) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/DScheglov/di-tory/blob/master/LICENSE)
 
 **di-tory** is a lightweight dependency injection library for TypeScript.
 It provides a flexible and type-safe way to configure and instantiate application
