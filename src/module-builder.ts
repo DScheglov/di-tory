@@ -22,9 +22,9 @@ type UnknownBuilderState = {
 const buildersState = new WeakMap<object, UnknownBuilderState>();
 
 const Module = <
-  Pr extends object,
-  Pb extends object,
-  Params extends object,
+  Pr extends object = { [key in never]: never },
+  Pb extends object = { [key in never]: never },
+  Params extends object = { [key in never]: never },
 >(): ModuleBuilder<Pr, Pb, Params> => {
   const privateResolvers = {} as Resolvers<Pr, Pr & Pb, Params>;
   const publicResolvers = {} as Resolvers<Pb, Pr & Pb, Params>;
@@ -37,7 +37,7 @@ const Module = <
 
   const self = {
     private<NPr extends NotOf<Pr & Pb>, NP extends object>(
-      module: Resolvers<NPr, Pr & Pb, NP & Params>,
+      resolvers: Resolvers<NPr, Pr & Pb, NP & Params>,
       scope?: ScopeType,
     ) {
       if (state.initializers != null) {
@@ -46,7 +46,7 @@ const Module = <
       Object.defineProperties(
         privateResolvers,
         Object.getOwnPropertyDescriptors(
-          scope != null ? decorateResolvers(module, scope) : module,
+          scope != null ? decorateResolvers(resolvers, scope) : resolvers,
         ),
       );
       return self as unknown;
@@ -67,7 +67,7 @@ const Module = <
     },
 
     public<NPb extends NotOf<Pr & Pb>, NP extends object>(
-      module: Resolvers<NPb, Pr & Pb, NP & Params>,
+      resolvers: Resolvers<NPb, Pr & Pb, NP & Params>,
       scope?: ScopeType,
     ) {
       if (state.initializers != null) {
@@ -76,7 +76,7 @@ const Module = <
       Object.defineProperties(
         publicResolvers,
         Object.getOwnPropertyDescriptors(
-          scope != null ? decorateResolvers(module, scope) : module,
+          scope != null ? decorateResolvers(resolvers, scope) : resolvers,
         ),
       );
       return self;

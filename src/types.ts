@@ -1,4 +1,16 @@
-export type ScopeType = 'transient' | 'singleton' | 'module' | 'async';
+export type Scopes = 'transient' | 'singleton' | 'module' | 'async';
+export type ScopeTypeToBeForced = Exclude<Scopes, 'singleton' | 'transient'>;
+export type ForcedScopeType = `!${ScopeTypeToBeForced}`;
+
+export type ScopeType = Scopes | ForcedScopeType;
+
+export type ScopeMap = {
+  [scope in Scopes]: scope;
+} & {
+  forced: {
+    [scope in ScopeTypeToBeForced]: `!${scope}`;
+  };
+};
 
 export type Resolver<M extends object, Params extends object, R> = {
   (injection: M, params: Params): R;

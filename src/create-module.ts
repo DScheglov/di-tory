@@ -13,7 +13,7 @@ import {
 } from './DependencyResolutionError.js';
 import { getStore } from './async-scope.js';
 import { propertyKeys } from './objects.js';
-import { overrideScope } from './scope.js';
+import { normalizeScope, overrideScope } from './scope.js';
 
 const singletonInstances: FactoryInstanceMap = new WeakMap();
 
@@ -61,12 +61,12 @@ export const createModule = <
   let transientInstances: FactoryInstanceMap;
 
   const getInstances = ({ scope }: Resolver<M, Params, unknown>) => {
-    const normalScope = scope?.charAt(0) === '!' ? scope.slice(1) : scope;
+    const normalizedScope = normalizeScope(scope);
     return (
       // prettier-ignore
-      normalScope === 'async' ? ensureAsyncInstances() :
-      normalScope === 'singleton' ? singletonInstances :
-      normalScope === 'transient' ? transientInstances :
+      normalizedScope === 'async' ? ensureAsyncInstances() :
+      normalizedScope === 'singleton' ? singletonInstances :
+      normalizedScope === 'transient' ? transientInstances :
       moduleInstances
     );
   };

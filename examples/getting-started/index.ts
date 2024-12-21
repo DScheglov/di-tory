@@ -64,9 +64,11 @@ function signIn(
   return authService.authenticate(userName, password);
 }
 
-const app = Module()
+const App = Module()
   .private({
     logger: (_, { logLevel }: { logLevel: string }) => new Logger(logLevel),
+  })
+  .private({
     userRepository: () => new UserRepository(),
   })
   .private({
@@ -77,8 +79,8 @@ const app = Module()
   });
 
 async function main() {
-  const { signIn } = app.create({ logLevel: 'debug' });
-  const user = await signIn('user', 'password');
+  const app = App.create({ logLevel: 'debug' });
+  const user = await app.signIn('user', 'password');
 
   console.log(user);
 }
