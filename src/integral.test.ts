@@ -7,7 +7,6 @@ import {
 } from './DependencyResolutionError';
 import { run, init } from './async-scope';
 import asyncScopeApi from './async-scope.node';
-import { after } from 'node:test';
 
 init(asyncScopeApi);
 
