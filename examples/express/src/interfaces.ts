@@ -13,12 +13,20 @@ export type User = {
 };
 
 export interface IUserRepository {
-  getUser(userName: string): Promise<User>;
+  getUser(userName: string): Promise<User | null>;
 }
 
 export interface IAuthService {
   authenticate(
     userName: string,
     password: string,
-  ): Promise<Result<User, 'invalid-credentials'>>;
+  ): Promise<Result<Omit<User, 'passwordHash'>, 'invalid-credentials'>>;
+}
+
+export interface Getter<T> {
+  get(): T;
+}
+
+export interface Setter<T> {
+  set(value: T): void;
 }

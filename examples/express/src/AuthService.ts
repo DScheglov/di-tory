@@ -12,10 +12,10 @@ export default class AuthService implements IAuthService {
     this.logger.info(`Authenticating user ${userName}`);
     const user = await this.userRepo.getUser(userName);
 
-    if (user.passwordHash !== password) {
+    if (user?.passwordHash !== password) {
       return { ok: false, error: 'invalid-credentials' } as const;
     }
 
-    return { ok: true as const, data: user };
+    return { ok: true as const, data: { ...user, passwordHash: undefined } };
   }
 }

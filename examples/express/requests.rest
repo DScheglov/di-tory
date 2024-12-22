@@ -1,8 +1,42 @@
+### Without X-Request-Id
+
 POST http://localhost:3000/login HTTP/1.1
 content-type: application/json
-# X-Request-Id: 80567598986527855233
 
 {
   "userName": "admin",
   "password": "password"
+}
+
+### Incorrect Password - Without X-Request-Id
+
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+
+{
+  "userName": "admin",
+  "password": "wrong-password"
+}
+
+
+### With X-Request-Id
+
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+X-Request-Id: 80567598986527855233
+
+{
+  "userName": "admin",
+  "password": "password"
+}
+
+### Incorrect Password - With X-Request-Id
+
+POST http://localhost:3000/login HTTP/1.1
+content-type: application/json
+X-Request-Id: 80567598986527855234
+
+{
+  "userName": "admin",
+  "password": "wrong-password"
 }

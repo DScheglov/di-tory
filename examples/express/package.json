@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts --watch --watch-path=./src"
+    "start": "tsx --watch --watch-path=src src/index.ts"
   },
   "dependencies": {
     "di-tory": "../../",

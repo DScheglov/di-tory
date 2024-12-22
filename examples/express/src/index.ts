@@ -1,27 +1,27 @@
 import { Module, Scope } from 'di-tory';
-import AsyncDiScope from 'di-tory/async-scope';
+import asyncDiScope from 'di-tory/async-scope';
 import asyncScopeNodeApi from 'di-tory/async-scope/node';
-import RequestId from './request-id';
-import Logger from './logger';
-import UserRepository from './user.repo';
-import AuthService from './auth.service';
-import createExpressApp from './app.express';
+import RequestId from './RequestId';
+import Logger from './Logger';
+import UserRepository from './UserRepository';
+import AuthService from './AuthService';
+import createExpressApp from './ExpressApp';
 
-AsyncDiScope.init(asyncScopeNodeApi);
+asyncDiScope.init(asyncScopeNodeApi);
 
 const App = Module()
   .private(
     {
-      ctx: () => new RequestId(),
+      asyncRequestId: () => new RequestId(),
     },
     Scope.async,
   )
   .privateImpl({
-    setRequestId({ ctx }, requestId?: string) {
-      ctx.requestId = requestId;
+    setRequestId({ asyncRequestId }, requestId?: string) {
+      asyncRequestId.requestId = requestId;
     },
-    getRequestId({ ctx }) {
-      return ctx.requestId;
+    getRequestId({ asyncRequestId }) {
+      return asyncRequestId.requestId;
     },
   })
   .private({
@@ -35,7 +35,8 @@ const App = Module()
     auth: ({ userRepo, logger }) => new AuthService(userRepo, logger),
   })
   .private({
-    app: (self, { port }: { port: number }) => createExpressApp(self, { port }),
+    app: ({ setRequestId, auth, logger }, { port }: { port: number }) =>
+      createExpressApp(setRequestId, auth, logger, port),
   })
   .public({
     run: ({ app }) => app.run,
