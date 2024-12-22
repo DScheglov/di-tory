@@ -1,4 +1,4 @@
-import type { IUserRepository } from "./interfaces";
+import type { IUserRepository } from './interfaces';
 
 export class UserRepository implements IUserRepository {
   async getUser(userName: string) {

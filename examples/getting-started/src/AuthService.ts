@@ -1,7 +1,7 @@
-import type { IAuthService, IUserRepository } from "./interfaces";
+import type { IAuthService, IUserRepository } from './interfaces';
 
 export class AuthService implements IAuthService {
-  constructor(private userRepo: IUserRepository) { }
+  constructor(private userRepo: IUserRepository) {}
 
   async authenticate(userName: string, password: string) {
     const user = await this.userRepo.getUser(userName);

@@ -16,7 +16,6 @@ export default class Logger implements IInfoLogger {
     return requestId ? `| ${requestId} | ` : '';
   }
 
-
   info(message: string) {
     if (this.level !== 'debug') return;
     console.log(`${this.#prefix}${message}`);
