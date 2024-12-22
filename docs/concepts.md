@@ -288,21 +288,21 @@ In this example if the `serviceA` is requested first we will get the following
 resolution order:
 
 1. resolve `serviceA`
-   1.1. resolve dependency of `serviceA` - `serviceB`
-   1.2. create `serviceB` instance
+   1. resolve dependency of `serviceA` - `serviceB`
+   2. create `serviceB` instance
 2. create `serviceA` instance, providing the `serviceB` instance to the `ServiceA` constructor
 3. call the `serviceB` initializer
-   3.1. resolve `serviceA`
-   3.2. get `serviceA` instance from the module
-   3.3. call `setServiceA` method of `serviceB` instance
+   1. resolve `serviceA`
+   2. get `serviceA` instance from the module
+   3. call `setServiceA` method of `serviceB` instance
 
 If the `serviceB` is requested first, the resolution order will be:
 
 1. resolve `serviceB`
 2. create `serviceB` instance
 3. call the `serviceB` initializer
-   3.1. resolve `serviceA`
-   3.2. resolve dependency of `serviceA` - `serviceB`
-   3.3. get `serviceB` instance from the module
-   3.4. create `serviceA` instance, providing the `serviceB` instance to the `ServiceA` constructor
-   3.5. call `setServiceA` method of `serviceB` instance
+   1. resolve `serviceA`
+   2. resolve dependency of `serviceA` - `serviceB`
+   3. get `serviceB` instance from the module
+   4. create `serviceA` instance, providing the `serviceB` instance to the `ServiceA` constructor
+   5. call `setServiceA` method of `serviceB` instance
