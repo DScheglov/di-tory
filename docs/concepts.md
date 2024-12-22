@@ -13,9 +13,42 @@
 A container for instances of "Services," which are created on demand with
 resolving their dependencies.
 
-In the example above, the module `app` contains instances of `Logger`,
-`UserRepository`, and `AuthService` services. The `signIn` function is a
-module method.
+In the [Getting Started Example](./../examples/getting-started/):
+
+```ts
+import { Module } from 'di-tory';
+import { Logger } from './Logger';
+import { UserRepository } from './UserRepository';
+import { AuthService } from './AuthService';
+import { signIn } from './signInUseCase';
+
+const App = Module()
+  .private({
+    logger: (_, { logLevel }: { logLevel: string }) => new Logger(logLevel),
+  })
+  .private({
+    userRepository: () => new UserRepository(),
+  })
+  .private({
+    authService: ({ userRepository }) => new AuthService(userRepository),
+  })
+  .publicImpl({
+    signIn, //
+  });
+
+async function main() {
+  const app = App.create({ logLevel: 'debug' });
+  const user = await app.signIn('user', 'password');
+
+  console.log(user);
+}
+
+main().catch(console.error);
+
+```
+
+The module `app` contains instances of `Logger`, `UserRepository`, and
+`AuthService` services. The `signIn` function is a module method.
 
 ## Module Builder
 
@@ -23,7 +56,8 @@ An object that describes the module's structure by defining its resolvers
 and implementation. The module builder serves as the composition root for
 the module.
 
-In the example above, the `App` object is a module builder:
+In the [Getting Started Example](./../examples/getting-started/), the `App`
+object is a module builder:
 
 ```ts
 const App = Module()
@@ -55,8 +89,8 @@ Defines whether an instance or method could be accessed from outside the module:
 - **Private**: An instance that can only be accessed within the module by
   providing it to a **Resolver** or **Implementation**.
 
-In the example above all service instances are private, and the `signIn` method
-is public.
+In the [Getting Started Example](./../examples/getting-started/) all service
+instances are private, and the `signIn` method is public.
 
 ## Resolver
 
@@ -64,7 +98,8 @@ A function that accepts the module and returns a new instance.
 A resolver also accepts creation-time parameters, which must be provided when
 the module is created.
 
-In the example above the following functions are resolvers:
+In the [Getting Started Example](./../examples/getting-started/) the following
+functions are resolvers:
 
 ```ts
 (_, { logLevel }: { logLevel: string }) => new Logger(logLevel)
@@ -157,8 +192,9 @@ one of its dependencies is declared as "transient", the instance also will be
 This description is a bit simplified. The actual behavior is a bit more complex and
 is described in the "life Cycles" section of the documentation.
 
-In the example above, all instances are "module" scoped, because it's the default
-scope and we didn't specify any other.
+In the [Getting Started Example](./../examples/getting-started/), all instances
+are "module" scoped, because it's the default scope and we didn't specify any
+other.
 
 ## Implementation
 
@@ -166,7 +202,8 @@ A set of module methods that accept an object referencing the module's
 instances as the first parameter and additional parameters as the rest.
 Implementations can be public or private.
 
-In the example above the `signIn` method is a part of the public implementation.
+In the [Getting Started Example](./../examples/getting-started/) the `signIn`
+method is a part of the public implementation.
 
 The implementation is a way to implement Inversion of Control (IoC) wide then
 just for dependency injection.
@@ -213,7 +250,8 @@ The main purpose of initializers is to get able to resolve the circular dependen
 
 **Important**!!: if you have a circular dependency, maybe you do something wrong.
 
-In the example above, we can define the following initializers:
+In the following example we use initializer for `serviceB` to provide `serviceA`
+reference to it:
 
 ```ts
 interface IServiceA {}
@@ -245,3 +283,26 @@ const App = Module()
     },
   });
 ```
+
+In this example if the `serviceA` is requested first we will get the following
+resolution order:
+
+1. resolve `serviceA`
+   1.1. resolve dependency of `serviceA` - `serviceB`
+   1.2. create `serviceB` instance
+2. create `serviceA` instance, providing the `serviceB` instance to the `ServiceA` constructor
+3. call the `serviceB` initializer
+   3.1. resolve `serviceA`
+   3.2. get `serviceA` instance from the module
+   3.3. call `setServiceA` method of `serviceB` instance
+
+If the `serviceB` is requested first, the resolution order will be:
+
+1. resolve `serviceB`
+2. create `serviceB` instance
+3. call the `serviceB` initializer
+   3.1. resolve `serviceA`
+   3.2. resolve dependency of `serviceA` - `serviceB`
+   3.3. get `serviceB` instance from the module
+   3.4. create `serviceA` instance, providing the `serviceB` instance to the `ServiceA` constructor
+   3.5. call `setServiceA` method of `serviceB` instance
