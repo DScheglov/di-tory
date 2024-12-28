@@ -1,3 +1,0 @@
-# Life Cycles
-
-*... coming soon ...*
