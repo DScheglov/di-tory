@@ -3,6 +3,7 @@ export { default as Scope } from './scope.js';
 export type {
   ScopeType,
   ModuleType,
+  Resolver,
   Resolvers,
   Initializers,
   SomeImpl,
