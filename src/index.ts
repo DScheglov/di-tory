@@ -11,3 +11,4 @@ export type {
   MethodsOf,
   Ref,
 } from './types';
+export { ref } from './ref.js';
