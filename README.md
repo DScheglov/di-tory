@@ -10,7 +10,7 @@ npm install di-tory
 
 ## Documentation
 
-See the [GitHub Wiki](https://github.com/DScheglov/di-tory/wiki/Introduction) for full documentation.
+See the [GitHub Wiki](https://github.com/DScheglov/di-tory/wiki) for full documentation.
 
 ## Example Usage
 
