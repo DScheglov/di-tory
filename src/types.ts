@@ -118,3 +118,7 @@ export interface AsyncScopeApi {
   getStore(): AsyncStorage;
   exit(): void;
 }
+
+export type Ref<T> = {
+  readonly current: T;
+};

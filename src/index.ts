@@ -9,4 +9,5 @@ export type {
   SomeImpl,
   ModuleBuilder,
   MethodsOf,
+  Ref,
 } from './types';
