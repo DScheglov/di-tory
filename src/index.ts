@@ -9,6 +9,4 @@ export type {
   SomeImpl,
   ModuleBuilder,
   MethodsOf,
-  Ref,
 } from './types';
-export { ref } from './ref.js';
