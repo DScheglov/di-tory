@@ -11,8 +11,15 @@ const Scope: ScopeMap = {
   },
 };
 
-export const normalizeScope = (scope?: ScopeType): Scopes | undefined =>
-  scope?.charAt(0) === '!' ? (scope.slice(1) as Scopes) : (scope as Scopes);
+export const normalizeScope = (scope?: ScopeType): Scopes | undefined => {
+  const firstChar = scope?.charAt(0);
+
+  if (firstChar === '?' || firstChar === '!') {
+    return scope!.slice(1) as Scopes;
+  }
+
+  return scope as Scopes;
+};
 
 export const overrideScope = (
   resolverScope?: ScopeType,
@@ -24,7 +31,8 @@ export const overrideScope = (
 
   if (resolverScope === undefined) return normalizedScope;
 
-  if (resolverScope.charAt(0) === '!') return resolverScope;
+  if (resolverScope.charAt(0) === '!' || scope?.charAt(0) === '?')
+    return resolverScope;
 
   if (resolverScope === Scope.singleton) return resolverScope;
 

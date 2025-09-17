@@ -1,46 +1,65 @@
-import { Module, Scope } from 'di-tory';
+import express from 'express';
 import asyncDiScope from 'di-tory/async-scope';
-import asyncScopeNodeApi from 'di-tory/async-scope/node';
-import RequestId from './RequestId';
-import Logger from './Logger';
-import UserRepository from './UserRepository';
-import AuthService from './AuthService';
-import createExpressApp from './ExpressApp';
+import main from './main';
+import hooks from './middlewares/express-hooks';
 
-asyncDiScope.init(asyncScopeNodeApi);
+const app = express();
+const parseJson = express.json();
 
-const App = Module()
-  .private(
-    {
-      asyncRequestId: () => new RequestId(),
-    },
-    Scope.async,
-  )
-  .privateImpl({
-    setRequestId({ asyncRequestId }, requestId?: string) {
-      asyncRequestId.requestId = requestId;
-    },
-    getRequestId({ asyncRequestId }) {
-      return asyncRequestId.requestId;
-    },
-  })
-  .private({
-    logger: ({ getRequestId }, { level }: { level: string }) =>
-      new Logger(level, getRequestId),
-  })
-  .private({
-    userRepo: ({ logger }) => new UserRepository(logger),
-  })
-  .private({
-    auth: ({ userRepo, logger }) => new AuthService(userRepo, logger),
-  })
-  .private({
-    app: ({ setRequestId, auth, logger }, { port }: { port: number }) =>
-      createExpressApp(setRequestId, auth, logger, port),
-  })
-  .public({
-    run: ({ app }) => app.run,
-  });
+app.use((req, res, next) => {
+  asyncDiScope.run(next);
+});
 
-const app = App.create({ port: 3000, level: 'debug' });
-app.run();
+app.use((req, res, next) => {
+  main.setRequestId(req.header('X-Request-Id'));
+  next();
+});
+
+app.use(
+  hooks({
+    onRequest: (req) => main.logger.info(`${req.method} ${req.url} - Request`),
+    onResponse: (req, res, duration) =>
+      main.logger.info(
+        `${req.method} ${req.url} - Response ${res.statusCode} ` +
+          `[${duration.toFixed(3).padStart(7)}ms]`,
+      ),
+  }),
+);
+
+app.use((req, res, next) =>
+  parseJson(req, res, (error) =>
+    error instanceof SyntaxError && /json/i.test(error.message)
+      ? res.status(400).json({ ok: false, error: 'invalid-json' })
+      : next(error),
+  ),
+);
+
+app.post('/login', async (req, res, next) => {
+  const { userName, password } = (req.body ?? {}) as Record<string, unknown>;
+
+  if (typeof userName !== 'string' || typeof password !== 'string') {
+    res.status(400).json({ ok: false, error: 'invalid-input' });
+    return;
+  }
+
+  try {
+    const result = await main.signIn(userName, password);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// express error handler - suppress eslint error
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((error: any, req: any, res: any, next: any) => {
+  console.error(error);
+
+  res.status(500).json({ ok: false, error: 'something-went-wrong' });
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  main.logger.info(`Server running on port ${port}`);
+});

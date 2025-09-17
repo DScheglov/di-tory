@@ -5,7 +5,7 @@ export default class AuthService implements IAuthService {
     private userRepo: IUserRepository,
     private logger: IInfoLogger,
   ) {
-    this.logger.info('AuthService instance created');
+    this.logger.info('>>> AuthService instance created <<<');
   }
 
   async authenticate(userName: string, password: string) {

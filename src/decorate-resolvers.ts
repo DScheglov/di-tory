@@ -2,6 +2,14 @@ import { propertyKeys } from './objects.js';
 import Scope from './scope.js';
 import type { MethodsOf, Resolver, ScopeType, SomeImpl } from './types';
 
+const isProxyResolver = <T extends object, M extends object, P extends object>(
+  resolver: Resolver<M, P, T>,
+): resolver is Resolver<M, P, T> & {
+  isProxy: true;
+  readonly key: unique symbol;
+  resolver: Resolver<M, P, T>;
+} => (resolver as any)?.isProxy === true; // eslint-disable-line @typescript-eslint/no-explicit-any
+
 export const decorateResolver = <
   M extends object,
   Params extends object,
@@ -11,6 +19,9 @@ export const decorateResolver = <
   resolver: Resolver<M, Params, R>,
   scope: S,
 ): Resolver<M, Params, R> => {
+  if (resolver.scope === scope) {
+    return resolver;
+  }
   const newResolver = (injection: M, params: Params): R =>
     resolver(injection, params);
   newResolver.scope = scope;
@@ -32,7 +43,11 @@ export const decorateResolvers = <
     [Item in keyof Items]: Resolver<M, Params, Items[Item]>;
   };
   for (const key of propertyKeys(resolvers)) {
-    newResolvers[key] = decorateResolver(resolvers[key], scope);
+    const resolver = resolvers[key];
+    newResolvers[key] = decorateResolver(resolver, scope);
+    if (isProxyResolver<any, M, Params>(resolver)) {
+      newResolvers[resolver.key as keyof Items] = resolver.resolver;
+    }
   }
   return newResolvers;
 };

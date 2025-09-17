@@ -1,8 +1,9 @@
 export type Scopes = 'transient' | 'singleton' | 'module' | 'async';
 export type ScopeTypeToBeForced = Exclude<Scopes, 'singleton' | 'transient'>;
 export type ForcedScopeType = `!${ScopeTypeToBeForced}`;
+export type WeakScopeType = `?${'async' | 'transient'}`;
 
-export type ScopeType = Scopes | ForcedScopeType;
+export type ScopeType = Scopes | ForcedScopeType | WeakScopeType;
 
 export type ScopeMap = {
   [scope in Scopes]: scope;

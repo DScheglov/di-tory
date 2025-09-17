@@ -1,18 +1,18 @@
 import type { IInfoLogger } from './interfaces';
 
 export default class Logger implements IInfoLogger {
-  #getRequestId: () => string;
+  #requestId: { get(): string };
 
   constructor(
     public level: string,
-    getRequestId: () => string,
+    requestId: { get(): string },
   ) {
-    this.#getRequestId = getRequestId;
-    console.log(`${this.#prefix}Logger created with level ${level}`);
+    this.#requestId = requestId;
+    this.info(`>>> Logger created with level ${level} <<<`);
   }
 
   get #prefix() {
-    const requestId = this.#getRequestId();
+    const requestId = this.#requestId.get();
     return requestId ? `| ${requestId} | ` : '';
   }
 

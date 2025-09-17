@@ -3,6 +3,7 @@ import {
   createMethodResolvers,
   decorateResolvers,
 } from './decorate-resolvers.js';
+import Scope from './scope.js';
 import type {
   Initializers,
   ModuleBuilder,
@@ -46,7 +47,7 @@ const Module = <
       Object.defineProperties(
         privateResolvers,
         Object.getOwnPropertyDescriptors(
-          scope != null ? decorateResolvers(resolvers, scope) : resolvers,
+          decorateResolvers(resolvers, scope ?? Scope.module),
         ),
       );
       return self as unknown;
@@ -76,7 +77,7 @@ const Module = <
       Object.defineProperties(
         publicResolvers,
         Object.getOwnPropertyDescriptors(
-          scope != null ? decorateResolvers(resolvers, scope) : resolvers,
+          decorateResolvers(resolvers, scope ?? Scope.module),
         ),
       );
       return self;

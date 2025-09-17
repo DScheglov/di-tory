@@ -89,7 +89,5 @@ brew install jq
 
 Windows:
 
-Windows:
-
 Download the `jq` executable from the [official website](https://stedolan.github.io/jq/download/)
 and add it to your system's `PATH`.

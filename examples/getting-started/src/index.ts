@@ -2,27 +2,31 @@ import { Module } from 'di-tory';
 import { Logger } from './Logger';
 import { UserRepository } from './UserRepository';
 import { AuthService } from './AuthService';
-import { signIn } from './signInUseCase';
 
 const App = Module()
   .private({
     logger: (_, { logLevel }: { logLevel: string }) => new Logger(logLevel),
   })
   .private({
-    userRepository: () => new UserRepository(),
+    userRepository: ({ logger }) => new UserRepository(logger),
   })
   .private({
-    authService: ({ userRepository }) => new AuthService(userRepository),
+    authService: ({ userRepository, logger }) =>
+      new AuthService(userRepository, logger),
   })
   .publicImpl({
-    signIn, //
+    async signIn({ authService, logger }, userName: string, password: string) {
+      logger.info(`Authenticating user: ${userName}`);
+      const user = await authService.authenticate(userName, password);
+      logger.info(`User authenticated: ${user.name}`);
+
+      return user;
+    },
   });
 
 async function main() {
   const app = App.create({ logLevel: 'debug' });
-  const user = await app.signIn('user', 'password');
-
-  console.log(user);
+  await app.signIn('Superuser', 'password');
 }
 
 main().catch(console.error);

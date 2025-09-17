@@ -20,7 +20,7 @@ export interface IAuthService {
   authenticate(
     userName: string,
     password: string,
-  ): Promise<Result<Omit<User, 'passwordHash'>, 'invalid-credentials'>>;
+  ): Promise<Result<Omit<User, 'passwordHash'>, 'invalid-credentials'>>>;
 }
 
 export interface Getter<T> {
