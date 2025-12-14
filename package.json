@@ -1,6 +1,6 @@
 {
   "name": "di-tory",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Compose applications with dependency injection",
   "scripts": {
     "test": "jest",
