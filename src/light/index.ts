@@ -26,7 +26,7 @@ const createModule = <
   singletons: Map<keyof (Pr & Pb), any>,
   privateResolvers: Resolvers<Pr, Pr & Pb, Params>,
   publicResolvers: Resolvers<Pb, Pr & Pb, Params>,
-  initializers: Initializers<Pr & Pb, Params> | null,
+  initializers: Initializers<Pr & Pb, Params>,
   params: Params,
 ): Pb => {
   type Name = keyof (Pr & Pb);
@@ -110,7 +110,7 @@ const createModule = <
     instances.set(name, instance);
 
     if (resolutionStack.length === 0) {
-      (initializers?.[name] as any)?.call(instance, self, params);
+      (initializers[name] as any)?.call(instance, self, params);
     }
 
     return instance;
@@ -127,6 +127,7 @@ export const Module = <
   const privateResolvers = {} as Resolvers<Pr, Pr & Pb, Params>;
   const publicResolvers = {} as Resolvers<Pb, Pr & Pb, Params>;
   let initializers = null as Initializers<Pr & Pb, Params> | null;
+  let sealed = false;
   const singletons = new Map<keyof (Pr & Pb), (Pr & Pb)[keyof (Pr & Pb)]>();
 
   const self = {
@@ -134,7 +135,7 @@ export const Module = <
       resolvers: Resolvers<NPr, Pr & Pb, NP & Params>,
       scope?: ScopeType,
     ) {
-      if (initializers != null || sealed) {
+      if (sealed) {
         throw new Error('Cannot extend initialized module');
       }
 
@@ -153,7 +154,7 @@ export const Module = <
     },
 
     privateImpl<Impl extends SomeImpl<Pr & Pb>>(implementation: Impl) {
-      if (initializers != null || sealed) {
+      if (sealed) {
         throw new Error('Cannot extend initialized module');
       }
 
@@ -177,7 +178,7 @@ export const Module = <
       resolvers: Resolvers<NPb, Pr & Pb, NP & Params>,
       scope?: ScopeType,
     ) {
-      if (initializers != null || sealed) {
+      if (sealed) {
         throw new Error('Cannot extend initialized module');
       }
 
@@ -196,7 +197,7 @@ export const Module = <
     },
 
     publicImpl<Impl extends SomeImpl<Pr & Pb>>(implementation: Impl) {
-      if (initializers != null || sealed) {
+      if (sealed) {
         throw new Error('Cannot extend initialized module');
       }
       for (const name of Object.keys(implementation) as (keyof Impl)[]) {
@@ -217,6 +218,7 @@ export const Module = <
 
     init(initializer: Initializers<Pr & Pb, Params>) {
       initializers = initializer;
+      sealed = true;
       return self;
     },
 
@@ -226,13 +228,11 @@ export const Module = <
         singletons,
         privateResolvers,
         publicResolvers,
-        initializers,
+        initializers ?? {},
         params,
       );
     },
   };
-
-  let sealed = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return self as any;
