@@ -63,6 +63,11 @@
       "import": "./esm/async-scope.node.js",
       "require": "./lib/async-scope.node.js"
     },
+    "./light": {
+      "types": "./lib/light/index.d.ts",
+      "import": "./esm/light/index.js",
+      "require": "./lib/light/index.js"
+    },
     "./proxy-tools": {
       "types": "./lib/proxy-tools.d.ts",
       "import": "./esm/proxy-tools.js",
@@ -71,6 +76,9 @@
   },
   "typesVersions": {
     "*": {
+      "light": [
+        "./lib/light/index.d.ts"
+      ],
       "async-scope/node": [
         "./lib/async-scope.node.d.ts"
       ],

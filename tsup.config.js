@@ -2,6 +2,7 @@ import { defineConfig } from 'tsup';
 
 const entries = [
   [{ 'di-tory': './src/index.ts' }, 'DiTory'], //
+  [{ 'di-tory.light': './src/light/index.ts' }, 'DiToryLight'], //
   [{ 'di-tory.proxy-tools': './src/proxy-tools.ts' }, 'DiToryProxy'], //
 ];
 
