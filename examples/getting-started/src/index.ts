@@ -1,4 +1,4 @@
-import { Module } from 'di-tory';
+import { Module } from 'di-tory/light';
 import { Logger } from './Logger';
 import { UserRepository } from './UserRepository';
 import { AuthService } from './AuthService';

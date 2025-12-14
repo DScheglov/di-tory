@@ -31,7 +31,7 @@ const config = {
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: ['/src/types.ts'],
+  coveragePathIgnorePatterns: ['/src/types.ts', '/src/light/types.ts'],
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: 'v8',
